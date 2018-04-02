@@ -31,6 +31,9 @@ level above this 'Scripts' directory (the 'top level'):
 
   rest_orig = 198 resting FMRI datasets
 
+The 198 Beijing-Zang datasets can be downloaded from
+http://fcon_1000.projects.nitrc.org/fcpClassic/FcpTable.html 
+
 Other directories will be created during the processing, as
 described en passant, infra.
 
