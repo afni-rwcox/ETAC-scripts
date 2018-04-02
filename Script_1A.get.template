@@ -1,0 +1,26 @@
+#!/bin/tcsh
+
+# fetch the MNI template dataset (if needed)
+
+set topdir = `dirname $cwd`
+cd $topdir
+
+set Basedset = MNI152_2009_template.nii
+
+if( -f $Basedset )then
+  echo "Found $Basedset"
+else if( -f ${Basedset}.gz )
+  gzip -d ${Basedset}.gz
+  echo "Uncompressed $Basedset"
+else
+  set tpath = `@FindAfniDsetPath ${Basedset}.gz`
+  if( "$tpath" == '' ) then
+    echo "***** Failed to find template ${Basedset}.gz -- exiting :(" ; exit 1
+  endif
+  echo "Copying $Basedset to $cwd"
+  cp -f $tpath/${Basedset}.gz .
+  gzip -d ${Basedset}.gz
+endif
+
+time
+exit 0

@@ -1,0 +1,44 @@
+#!/bin/tcsh
+
+### Script to submit some t-test jobs for ETAC
+
+# which stimulus case to use
+set stim = Stim10
+# suffix is so we can run more than 1000 if we want
+# (but into separate output directories)
+set suff = A
+
+# name of file to get list of jobs to run
+
+set jfile = Script_3B.ttest.2sam.${stim}.alljobs
+
+if( -f ${jfile} ) \rm -f ${jfile}
+touch ${jfile}
+
+# scan for completed jobs, only create a new job if final output file isn't there
+# (run up to 1000 jobs here)
+
+foreach nnnn ( `count -dig 4 0 999` )
+
+# this is the last output file created by job 'nnnn' (if it finished)
+  if( -f ../${stim}.TT2sam${suff}/TT2sam${suff}.${nnnn}.P010-001s2h2.ETACmask.2sid.9perc.nii.gz ) continue
+
+# the command to run job 'nnnn' (which will delete any old 'nnnn' files)
+  echo "tcsh -x Script_3B.ttest.2sam.csh ${stim}  ${nnnn} ${suff}" >> ${jfile}
+
+end
+
+# count lines output
+set njob = `wc -l < $jfile`
+
+echo "Found $njob jobs to start"
+
+# if there are any jobs, submit them
+if( $njob > 0 )then
+  swarm -f ${jfile} -g 90 -t 16                             \
+        --usecsh --time 19:49:00 --partition nimh,norm      \
+        --job-name TT2${stim} --sbatch '--gres=lscratch:90'
+endif
+
+time
+exit 0

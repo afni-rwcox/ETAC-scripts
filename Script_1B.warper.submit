@@ -1,0 +1,9 @@
+#!/bin/tcsh
+
+# Submit the warper jobs via swarm (16 threads per job)
+# The 'nimh' partitions is local to NIH,
+#  and certainly has to be changed for any other site.
+# Actual run time was about 1h 45m on the NIMH nodes (per job).
+
+swarm -f Script_1B.warper.alljobs -g 24 -t 16 --usecsh --time 2:59:00 \
+     --partition nimh --job-name Warper

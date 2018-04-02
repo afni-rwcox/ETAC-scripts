@@ -1,0 +1,30 @@
+#!/bin/tcsh
+
+### This script submits the regression jobs to the
+### SLURM cluster management software, using the swarm command.
+
+set sname = Script_2B.regress.alljobs
+if( ! -f $sname )then
+  echo "ERROR: File $sname doesn't exist" ; exit 1
+endif
+
+# at most 1000 jobs are allowed at a time, so we 'batch'
+# them into groups if there are too many
+
+set njob = `grep ^tcsh $sname | wc -l`
+if( $njob < 1 )then
+  echo "ERROR: no jobs found in $sname" ; exit 1
+endif
+
+# this batching will keep number of jobs at or below 900
+@ bat = ( $njob + 899 ) / 900
+
+# Run this file via swarm
+#  (per job: 8 threads, 24 Gbytes RAM, 20 Gbytes scratch disk).
+# The partition names to be used are local to the NIH
+#  and certainly need to be changed for any other site.
+
+swarm -f $sname -g 24 -t 8 -b $bat --usecsh --time 1:59:00 \
+      --partition nimh,norm --job-name Regress --sbatch '--gres=lscratch:20'
+
+exit 0
