@@ -98,6 +98,8 @@ Script_2B.regress.csh          = This script runs the analysis for
                                  one subject, for one stimulus
                                  timing file. On the NIH cluster,
                                  each job takes about an hour.
+                                 afni_proc.py is used to create
+                                 the processing stream.
 
 Script_2B.regress.alljobs.make = This script makes the file
                                  Script_2B.regress.alljobs, which
