@@ -72,10 +72,11 @@ less than 198, the missing results will have to be created by
 running the appropriate jobs again.
 
 The quality of the alignments can be judged by looking at the
-JPEG images in anat_warped/snapshots. Anything that is grossly
-wrong should be fixed. In the present case, none of the initial
-alignments had any serious flaws -- the @SSwarper script usually
-works pretty well, but it is important to make sure.
+JPEG images in anat_warped/snapshots. (If nothing else is handy,
+the AFNI program aiv can be used to look at these .jpg files.)
+Anything that is grossly wrong should be fixed. In the present case,
+none of the initial alignments had any serious flaws -- the @SSwarper
+script usually works pretty well, but it is important to make sure.
 
 ----- STEP 2: Individual subject time series analyses -----
 
