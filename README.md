@@ -39,8 +39,8 @@ described en passant, infra.
 
 ----- STEP 1: Warping subject anats to MNI template -----
 
-This is a preliminary operation, so that all subjects will be
-in the same 'space' for group analyses.
+This is a preliminary operation, so that all datasets will be
+transformed to the same 'space' for group analyses.
 
 Script_1A.get.template   = This script must be run first, to
                            copy the MNI template dataset from
