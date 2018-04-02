@@ -1,6 +1,7 @@
 
-------------------- Scripts for ETAC Testing -------------------
--------------------    RW Cox -- Mar 2018    -------------------
+----------------- Scripts for ETAC Testing -------------------
+
+-----------------    RW Cox -- Mar 2018    -------------------
 
 Beijing.list.txt = This file has the list of the identifiers
                    for the 198 subjects in the collection.
@@ -25,14 +26,16 @@ have to alter the way jobs are sent for execution.
 
 The Beijing datasets are organized into two directories, one
 level above this 'Scripts' directory (the 'top level'):
+
   anat_orig = 198 structural datasets (anats)
+
   rest_orig = 198 resting FMRI datasets
+
 Other directories will be created during the processing, as
 described en passant, infra.
 
----------------------------------------------
-STEP 1: Warping subject anats to MNI template
----------------------------------------------
+----- STEP 1: Warping subject anats to MNI template -----
+
 This is a preliminary operation, so that all subjects will be
 in the same 'space' for group analyses.
 
@@ -41,13 +44,16 @@ Script_1A.get.template   = This script must be run first, to
                            its home in the AFNI binaries
                            directory to the top level directory.
                            It only need to be run once.
+
 Script_1B.warper.csh     = This script does the warping for
                            one subject, invoking AFNI's @SSwarper
                            script. On the NIH cluster,
                            each job takes 1.5-2 hours.
+
 Script_1B.warper.alljobs = This script is the list of 198
                            invocations of the single subject
                            warping script above.
+
 Script_1B.warper.submit  = This script submits the 198 jobs
                            above to the SLURM system for
                            execution.
@@ -55,7 +61,9 @@ Script_1B.warper.submit  = This script submits the 198 jobs
 Results are stored in a new top level directory named anat_warped.
 All 198 jobs must be run successfully before proceeding to STEP 2.
 This command will tell you if anat_warped is complete:
+
   ls ../anat_warped/*_WARP.nii.gz | wc -l
+
 The output of this command (to stdout) should be 198. If it is
 less than 198, the missing results will have to be created by
 running the appropriate jobs again.
@@ -66,9 +74,8 @@ wrong should be fixed. In the present case, none of the initial
 alignments had any serious flaws -- the @SSwarper script usually
 works pretty well, but it is important to make sure.
 
------------------------------------------------
-STEP 2: Individual subject time series analyses
------------------------------------------------
+----- STEP 2: Individual subject time series analyses -----
+
 This second preliminary step is to provide the 'raw material' for
 the group analyses of STEP 3.
 
@@ -82,18 +89,22 @@ Script_2A.makestims.csh        = This script must be run first (just
                                  one time), to create the stimulus
                                  timing files (into a top level
                                  directory named stimfiles).
+
 Script_2B.regress.csh          = This script runs the analysis for
                                  one subject, for one stimulus
                                  timing file. On the NIH cluster,
                                  each job takes about an hour.
+
 Script_2B.regress.alljobs.make = This script makes the file
                                  Script_2B.regress.alljobs, which
                                  is the list of commands to run
                                  Script_2B.regress.csh over all
                                  198 subjects and all 15 stimulus
                                  timing files (2970 jobs).
+
 Script_2B.regress.submit       = This script submits the job list
                                  in Script_2B.regress.alljobs.
+
 Script_2M.makemask.csh         = This script should be run once,
                                  after the Stim10.Case01 results
                                  are finished (but before running
@@ -101,6 +112,7 @@ Script_2M.makemask.csh         = This script should be run once,
                                  make an intersection mask from all
                                  the EPI datasets and the MNI template
                                  GM+CSF mask, for use in STEP 3.
+
 Script_2X.moveup.csh           = This script moves the statistics
                                  outputs from the analyses up to
                                  the higher level StimD.NN directory.
@@ -112,7 +124,9 @@ run Script_2X.moveup.csh. All 2970 results are needed to be finished
 and moved before STEP 3 can be started.
 
 The command
+
   ls ../Stim*/stats.sub*_REML+tlrc.HEAD | wc -l
+
 will tell you how many results are successfully computed and moved
 up into the StimD.NN directories. If this number is less than 2970,
 you will have to re-run Script_2B.regress.alljobs.make -- this script
@@ -132,17 +146,18 @@ lines where tempdir is set to /lscratch/$SLURM_JOBID/$finaldir and
 usetemp is set to 1, so that the results will be computed directly
 into the final directory.
 
----------------------------------------------------
-STEP 3: Running 3dttest++ a lot to build statistics
----------------------------------------------------
+----- STEP 3: Running 3dttest++ a lot to build statistics -----
+
 Finally! You get to run t-test simulations, drawing from the pool
 of 198 subjects, 3 stimulus timing setups, 5 cases each, to find
 "activation" results -- which (when present) are false positives.
 
 Script_3B.ttest.2sam.csh           = Script to run one ETAC job
+
 Script_3B.ttest.2sam.Stim10.submit = Script to submit 1000 ETAC jobs for
                                      the Stim10 case; you can copy and
                                      edit it for the other Stim cases.
+
 Script_3Q.make_one_tt_command.csh  = Sub-script of Script_3B.ttest.2sam.csh
                                      to assemble the 3dttest++ command with
                                      a random collection of input datasets.
@@ -157,9 +172,8 @@ the first time (say), you can just re-run Script_3B.ttest.2sam.Stim10.submit
 to re-start the 200 that failed. Of course, you should examine the stderr
 outputs from the failed jobs to figure out what the problems were.
 
--------------------------------
-STEP 4: Counting up the results
--------------------------------
+----- STEP 4: Counting up the results -----
+
 After all that work, you finally get some numbers. It's amazing how much
 effort and time it takes to get the small tabular outputs.
 
@@ -174,8 +188,11 @@ Script_4A.counter.csh = Counts the results in an output directory,
                         "good enough".
 
 For example,
+
   tcsh Script_4A.counter.csh Stim10.TT2samA
+
 will give the statistics from the results of the jobs submitted by
+
   tcsh Script_3B.ttest.2sam.Stim10.submit
 
 There are no scripts here to plot these tabular results.
